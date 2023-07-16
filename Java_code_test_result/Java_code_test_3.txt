@@ -1,0 +1,88 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Mazer {
+
+    // Create a 2 by 2 arrays to track and map down the type of node, it is used to memorize the type of nodes.
+    // 0 = unknown
+    // 1 = traveled
+    // 9 = Exit
+    // For now we just assume the maze is 20 by 20
+    public static int[][] mazeMap =new int[20][20];
+    
+    public static HashMap<Action,int[]> actionMap = new HashMap<Action,int[]>();
+    
+    public static ArrayList<int[]> walkedPath = new ArrayList<int[]>();
+
+    public static void main(String[] args) {
+        
+        // Initialize a actionMap to actually represent the "direction" of each maze.Action with int[] as value;
+        int[] north = {0,-1};
+        actionMap.put(Action.MoveNorth,north);
+        int[] east = {1,0};
+        actionMap.put(Action.MoveEast,east);
+        int[] south = {0,1};
+        actionMap.put(Action.MoveSouth,south);
+        int[] west = {-1,0};
+        actionMap.put(Action.MoveWest,west);
+
+
+        // Initialize the start point, and add it to walkedPath.
+        int[] startPoint = {5,7};
+        // Recursively run findPath function.
+        findPath(startPoint);
+        System.out.println("Exit path:\t" + walkedPath);
+    }
+
+    public static int[] findPath(int[] lastPoint){
+        List<Action> possibleActions = PossibleActions(lastPoint[0],lastPoint[1]);
+
+        // This array is used to memorize the status of all the nearby nodes, in case we should turn back and try other path.
+        ArrayList<Integer> nodeList = new ArrayList<Integer>();
+
+        //Check if Action exit is in the last point, if so end recursion.
+        if(possibleActions.indexOf(Action.Exit) != -1){
+            mazeMap[lastPoint[0]][lastPoint[1]] = 9;
+            walkedPath.add(lastPoint);
+            return lastPoint;
+        }
+
+        for(Action action: possibleActions){
+            int[] direction = actionMap.get(action);
+            int[] nextPoint = {lastPoint[0] + direction[0], lastPoint[1]+direction[1]};
+            int node = mazeMap[nextPoint[0]][nextPoint[1]];
+            nodeList.add(node);
+
+            // If node on map is untraveled, travel to it, else iterate to next action.
+            if(node == 0){
+                mazeMap[lastPoint[0]][lastPoint[1]] = 1;
+                walkedPath.add(lastPoint);
+                return findPath(nextPoint);
+            }
+        }
+        
+        // If all nearby node has been traveled, turn back.
+        if(nodeList.indexOf(0) == -1){
+            walkedPath.remove(walkedPath.size()-1);
+            return findPath(walkedPath.get(walkedPath.size()-1));
+        }
+        
+        return lastPoint;
+    }
+
+// Below are used for reference.
+    enum Action {
+        Exit,
+        MoveNorth,
+        MoveEast,
+        MoveSouth,
+        MoveWest
+    }
+
+    public static List<Action> PossibleActions(int x, int y){
+        List<Action> result = new ArrayList<Action>();
+        return result;
+    }
+
+}

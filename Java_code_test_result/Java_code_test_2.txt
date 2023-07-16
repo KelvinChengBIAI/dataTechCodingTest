@@ -1,0 +1,1 @@
+It will print out infinite "a\n" in the console, as the iterator will not move on to the next element due to the iterator.previous, the statement listIterator.hasNext() will always be true, hence the while loop will never end.
